@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'br.com.infnet.tp2-legado' is invalid and this project uses 'br.com.infnet.tp2_legado' instead.
+* The original package name 'br.com.infnet.tp2-legado' is invalid and this project uses 'br.com.infnet.tp3_spring' instead.
 
 # Getting Started
 

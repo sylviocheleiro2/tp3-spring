@@ -11,7 +11,29 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./script/aventura.sql:/docker-entrypoint-initdb.d/99_aventura.sql
+      - pg_socket:/var/run/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -h 127.0.0.1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db-setup:
+    image: postgres:17-alpine
+    container_name: aventura-db-setup
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - pg_socket:/var/run/postgresql
+      - ./script/aventura.sql:/script/aventura.sql
+    command: >
+      sh -c "
+        echo 'Iniciando configuracao do banco de dados via UNIX socket...'
+        psql -h /var/run/postgresql -U postgres -c \"ALTER USER postgres WITH PASSWORD 'postgres123';\"
+        psql -h /var/run/postgresql -U postgres -f /script/aventura.sql
+        echo 'Configuracao do banco de dados finalizada com sucesso!'
+      "
 
   redis:
     image: redis:7-alpine
@@ -21,5 +43,4 @@ services:
 
 volumes:
   pgdata:
-
-  #    docker exec -it aventura-db psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'postgres123';"
+  pg_socket:
