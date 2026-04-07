@@ -1,0 +1,360 @@
+{
+  "info": {
+    "_postman_id": "6ae76d4b-2594-4b64-b2a5-96e109d2c966",
+    "name": "CONSULTAS PARTE 3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "33276919"
+  },
+  "item": [
+    {
+      "name": "AVENTUREIROS",
+      "item": [
+        {
+          "name": "Aventureiros - Listagem com Filtros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/aventureiros?organizacaoId=1&ativo=true&classe=GUERREIRO&nivelMinimo=5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "aventureiros"
+              ],
+              "query": [
+                {
+                  "key": "organizacaoId",
+                  "value": "1"
+                },
+                {
+                  "key": "ativo",
+                  "value": "true"
+                },
+                {
+                  "key": "classe",
+                  "value": "GUERREIRO"
+                },
+                {
+                  "key": "nivelMinimo",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Aventureiros - Busca por Nome (Parcial)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nome\": \"Patolino o MAGO\",\r\n  \"classe\": \"MAGO\",\r\n  \"nivel\": 7,\r\n  \"organizacaoId\": 1,\r\n  \"usuarioResponsavelId\": 2\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/aventureiros/busca?organizacaoId=1&nome=DO&sort=nome,asc",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "aventureiros",
+                "busca"
+              ],
+              "query": [
+                {
+                  "key": "organizacaoId",
+                  "value": "1"
+                },
+                {
+                  "key": "nome",
+                  "value": "DO"
+                },
+                {
+                  "key": "sort",
+                  "value": "nome,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Aventureiros - Perfil Completo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/aventureiros/4",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "aventureiros",
+                "4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Aventureiros - Criação",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nome\": \"Patolino o MAGO\",\r\n  \"classe\": \"MAGO\",\r\n  \"nivel\": 7,\r\n  \"organizacaoId\": 1,\r\n  \"usuarioResponsavelId\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/aventureiros",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "aventureiros"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Aventureiros - Criação 2",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nome\": \"Guts, o Espadachim Negro\",\r\n  \"classe\": \"GUERREIRO\",\r\n  \"nivel\": 6,\r\n  \"organizacaoId\": 1,\r\n  \"usuarioResponsavelId\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/aventureiros",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "aventureiros"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "MISSÕES",
+      "item": [
+        {
+          "name": "Missões - Listagem de Missões",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/missoes?organizacaoId=1&status=PLANEJADA&nivelPerigo=ALTO&inicio=2026-01-01T00:00:00",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "missoes"
+              ],
+              "query": [
+                {
+                  "key": "organizacaoId",
+                  "value": "1"
+                },
+                {
+                  "key": "status",
+                  "value": "PLANEJADA"
+                },
+                {
+                  "key": "nivelPerigo",
+                  "value": "ALTO"
+                },
+                {
+                  "key": "inicio",
+                  "value": "2026-01-01T00:00:00"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Missões - Detalhamento de Missão",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/missoes/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "missoes",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Missões - Detalhamento de Missão sem existir",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/missoes/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "missoes",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Missões - Adicionar participando missão",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"aventureiroId\": 4, \r\n  \"missaoId\": 1,\r\n  \"papel\": \"SUPORTE\",\r\n  \"recompensaOuro\": 850.00\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/participacoes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "participacoes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Relatórios Gerenciais",
+      "item": [
+        {
+          "name": "Relatório - Ranking de aventureiro p/ organização",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/aventureiros/ranking?organizacaoId=1&status=CONCLUIDA",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "aventureiros",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "organizacaoId",
+                  "value": "1"
+                },
+                {
+                  "key": "status",
+                  "value": "CONCLUIDA"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Relatório - Organização missão",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/missoes/relatorios/metricas?organizacaoId=1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "missoes",
+                "relatorios",
+                "metricas"
+              ],
+              "query": [
+                {
+                  "key": "organizacaoId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

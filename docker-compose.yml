@@ -1,0 +1,25 @@
+services:
+  db:
+    image: leogloriainfnet/postgres-tp2-spring:2.0-mac
+    container_name: aventura-db
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./script/aventura.sql:/docker-entrypoint-initdb.d/99_aventura.sql
+
+  redis:
+    image: redis:7-alpine
+    container_name: aventura-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:
+
+  #    docker exec -it aventura-db psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'postgres123';"
