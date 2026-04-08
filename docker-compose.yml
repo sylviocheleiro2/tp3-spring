@@ -29,7 +29,7 @@ services:
       - ./script/aventura.sql:/script/aventura.sql
     command: >
       sh -c "
-        echo 'Iniciando configuracao do banco de dados via UNIX socket...'
+        echo 'Iniciando configuracao do banco de dados.'
         psql -h /var/run/postgresql -U postgres -c \"ALTER USER postgres WITH PASSWORD 'postgres123';\"
         psql -h /var/run/postgresql -U postgres -f /script/aventura.sql
         echo 'Configuracao do banco de dados finalizada com sucesso!'
@@ -42,22 +42,22 @@ services:
       - "6379:6379"
 
   elasticsearch:
-    image: leogloriainfnet/elastic-tp2-spring:1.0-windows
+    image: leogloriainfnet/elastic-tp2-spring:1.0-alternativo
     container_name: guilda-es
     ports:
       - "9200:9200"
     environment:
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - xpack.ml.enabled=false
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.10
+    image: docker.elastic.co/kibana/kibana:9.3.1
     container_name: guilda-kibana
-    ports:
-      - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://guilda-es:9200
+    ports:
+      - "5601:5601"
     depends_on:
       - elasticsearch
 
