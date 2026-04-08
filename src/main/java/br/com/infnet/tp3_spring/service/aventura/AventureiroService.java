@@ -3,6 +3,8 @@ package br.com.infnet.tp3_spring.service.aventura;
 import br.com.infnet.tp3_spring.dto.aventura.*;
 import br.com.infnet.tp3_spring.enums.ClasseAventureiro;
 import br.com.infnet.tp3_spring.enums.StatusMissao;
+import br.com.infnet.tp3_spring.exceptions.BusinessRuleException;
+import br.com.infnet.tp3_spring.exceptions.ResourceNotFoundException;
 import br.com.infnet.tp3_spring.model.audit.Organizacao;
 import br.com.infnet.tp3_spring.model.audit.Usuario;
 import br.com.infnet.tp3_spring.model.aventura.Aventureiro;
@@ -16,9 +18,9 @@ import br.com.infnet.tp3_spring.repository.aventura.AventureiroRepository;
 import br.com.infnet.tp3_spring.dto.audit.OrganizacaoResponse;
 
 import br.com.infnet.tp3_spring.repository.aventura.CompanheiroRepository;
+import br.com.infnet.tp3_spring.repository.aventura.specs.AventureiroSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -42,16 +44,16 @@ public class AventureiroService {
     {
 
         Organizacao org = organizacaoRepository.findById(request.organizacaoId())
-                .orElseThrow(() -> new RuntimeException("ERRO: Organização não encontrada."));
+                .orElseThrow(() -> new ResourceNotFoundException("ERRO: Organização não encontrada."));
 
 
         Usuario responsavel = usuarioRepository.findById(request.usuarioResponsavelId())
-                .orElseThrow(() -> new RuntimeException("ERRO: Usuário responsável não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("ERRO: Usuário responsável não encontrado."));
 
         // REGRA: Restrição de Relacionamento Cruzado
         // O usuário que cadastra DEVE pertencer à mesma organização do aventureiro.
         if (!responsavel.getOrganizacao().getId().equals(org.getId())) {
-            throw new RuntimeException("VIOLAÇÃO: O usuário responsável não pertence à organização do aventureiro.");
+            throw new BusinessRuleException("VIOLAÇÃO: O usuário responsável não pertence à organização do aventureiro.");
         }
 
         Aventureiro aventureiro = Aventureiro.builder()
@@ -82,7 +84,7 @@ public class AventureiroService {
     public void deletar(Long id)
     {
         Aventureiro aventureiro = aventureiroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aventureiro não encontrado para exclusão."));
+                .orElseThrow(() -> new ResourceNotFoundException("Aventureiro não encontrado para exclusão."));
 
         aventureiroRepository.delete(aventureiro);
     }
@@ -92,11 +94,11 @@ public class AventureiroService {
     {
 
         Aventureiro aventureiro = aventureiroRepository.findById(aventureiroId)
-                .orElseThrow(() -> new RuntimeException("Aventureiro não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Aventureiro não encontrado."));
 
 
         if (aventureiro.getCompanheiro() != null) {
-            throw new RuntimeException("Este aventureiro já possui um fiel companheiro!");
+            throw new BusinessRuleException("Este aventureiro já possui um fiel companheiro!");
         }
 
         Companheiro companheiro = Companheiro.builder()
@@ -116,6 +118,8 @@ public class AventureiroService {
         );
     }
 
+
+
     public Page<AventureiroResponse> listarComFiltros(
             Long organizacaoId,
             Boolean ativo,
@@ -123,27 +127,13 @@ public class AventureiroService {
             Integer nivelMinimo,
             Pageable pageable)
     {
-
-        // Criamos a consulta dinâmica (Specification)
-        Specification<Aventureiro> spec = Specification.where((root, query, cb) ->
-                cb.equal(root.get("organizacao").get("id"), organizacaoId) // REGRA: Sempre isolar por Org
-        );
-
-        if (ativo != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("ativo"), ativo));
-        }
-
-        if (classe != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("classe"), classe));
-        }
-
-        if (nivelMinimo != null) {
-            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("nivel"), nivelMinimo));
-        }
-
-        // Busca paginada
-        return aventureiroRepository.findAll(spec, pageable).map(this::mapToResponse);
+        return aventureiroRepository.findAll(
+                AventureiroSpecs.comFiltros(organizacaoId, ativo, classe, nivelMinimo),
+                pageable
+        ).map(this::mapToResponse);
     }
+
+
 
     private AventureiroResponse mapToResponse(Aventureiro a)
     {
@@ -153,29 +143,22 @@ public class AventureiroService {
         );
     }
 
+
+
     @Transactional(readOnly = true)
     public Page<AventureiroResponse> buscarPorNome(Long organizacaoId, String nome, Pageable pageable)
     {
-        // Começamos com a trava de segurança da Organização
-        Specification<Aventureiro> spec = Specification.where((root, query, cb) ->
-                cb.equal(root.get("organizacao").get("id"), organizacaoId)
-        );
-
-        // Adicionamos a busca parcial se o nome não estiver vazio
-        if (nome != null && !nome.isBlank()) {
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("nome")), "%" + nome.toLowerCase() + "%")
-            );
-        }
-
-        return aventureiroRepository.findAll(spec, pageable).map(this::mapToResponse);
+        return aventureiroRepository.findAll(
+                AventureiroSpecs.porNome(organizacaoId, nome),
+                pageable
+        ).map(this::mapToResponse);
     }
 
     @Transactional(readOnly = true)
     public AventureiroDetalheResponse obterDetalhes(Long id)
     {
         Aventureiro a = aventureiroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aventureiro não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Aventureiro não encontrado."));
 
         CompanheiroResponse companheiroDto = null;
         if (a.getCompanheiro() != null) {

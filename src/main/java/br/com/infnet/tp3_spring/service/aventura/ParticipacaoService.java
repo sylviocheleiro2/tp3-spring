@@ -1,5 +1,7 @@
 package br.com.infnet.tp3_spring.service.aventura;
 
+import br.com.infnet.tp3_spring.exceptions.BusinessRuleException;
+import br.com.infnet.tp3_spring.exceptions.ResourceNotFoundException;
 import br.com.infnet.tp3_spring.model.aventura.*;
 import br.com.infnet.tp3_spring.repository.aventura.*;
 import br.com.infnet.tp3_spring.dto.aventura.ParticipacaoRequest;
@@ -18,20 +20,20 @@ public class ParticipacaoService {
 
     @Transactional
     public ParticipacaoResponse registrarParticipacao(ParticipacaoRequest request) {
-        // 1. Localizar as peças do tabuleiro
+
         Aventureiro aventureiro = aventureiroRepository.findById(request.aventureiroId())
-                .orElseThrow(() -> new RuntimeException("Aventureiro não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Aventureiro não encontrado."));
 
         Missao missao = missaoRepository.findById(request.missaoId())
-                .orElseThrow(() -> new RuntimeException("Missão não encontrada."));
+                .orElseThrow(() -> new ResourceNotFoundException("Missão não encontrada."));
 
-        // 2. REGRA DE OURO: Restrição de Organização
+
         // O aventureiro e a missão DEVEM pertencer à mesma organização
         if (!aventureiro.getOrganizacao().getId().equals(missao.getOrganizacao().getId())) {
-            throw new RuntimeException("VIOLAÇÃO: O aventureiro não pode participar de missões de outras organizações.");
+            throw new BusinessRuleException("VIOLAÇÃO: O aventureiro não pode participar de missões de outras organizações.");
         }
 
-        // 3. Criar a Entidade de Participação com a Chave Composta
+        //  Entidade de Participação com a Chave Composta
         ParticipacaoMissao participacao = ParticipacaoMissao.builder()
                 .id(new ParticipacaoMissaoId(missao.getId(), aventureiro.getId()))
                 .aventureiro(aventureiro)

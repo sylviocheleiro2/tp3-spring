@@ -10,11 +10,14 @@ import br.com.infnet.tp3_spring.repository.aventura.MissaoRepository;
 import br.com.infnet.tp3_spring.dto.audit.OrganizacaoResponse;
 import br.com.infnet.tp3_spring.enums.StatusMissao;
 import br.com.infnet.tp3_spring.enums.NivelPerigo;
+import br.com.infnet.tp3_spring.exceptions.BusinessRuleException;
+import br.com.infnet.tp3_spring.exceptions.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import br.com.infnet.tp3_spring.repository.aventura.specs.MissaoSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -32,10 +35,10 @@ public class MissaoService {
     {
 
         Organizacao org = organizacaoRepository.findById(request.organizacaoId())
-                .orElseThrow(() -> new RuntimeException("Organização não encontrada para criar a missão."));
+                .orElseThrow(() -> new ResourceNotFoundException("ERRO: Organização não encontrada."));
 
         if (!org.getAtivo()) {
-            throw new RuntimeException("Não é possível criar missões para uma organização inativa.");
+            throw new BusinessRuleException("Não é possível criar missões para uma organização inativa.");
         }
 
 
@@ -69,29 +72,10 @@ public class MissaoService {
             LocalDateTime fim,
             Pageable pageable)
     {
-
-        Specification<Missao> spec = Specification.where((root, query, cb) ->
-                cb.equal(root.get("organizacao").get("id"), organizacaoId)
-        );
-
-        if (status != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
-        }
-
-        if (nivelPerigo != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("nivelPerigo"), nivelPerigo));
-        }
-
-        // Filtro de Intervalo de Datas
-        if (inicio != null) {
-            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("dataInicio"), inicio));
-        }
-
-        if (fim != null) {
-            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("dataInicio"), fim));
-        }
-
-        return missaoRepository.findAll(spec, pageable).map(this::mapToResponse);
+        return missaoRepository.findAll(
+                MissaoSpecs.comFiltros(organizacaoId, status, nivelPerigo, inicio, fim),
+                pageable
+        ).map(this::mapToResponse);
     }
 
     private MissaoResponse mapToResponse(Missao m)
@@ -111,7 +95,7 @@ public class MissaoService {
     public MissaoDetalheResponse obterDetalhes(Long id)
     {
         Missao m = missaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Missão não encontrada."));
+                .orElseThrow(() -> new ResourceNotFoundException("Missão não encontrada."));
 
         List<AventureiroParticipanteResponse> participantes = m.getParticipacoes().stream()
                 .map(p -> new AventureiroParticipanteResponse(
