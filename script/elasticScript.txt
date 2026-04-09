@@ -1,0 +1,127 @@
+
+# Verificando
+GET guilda_loja/_count
+
+# ----------- PARTE A ------------
+
+ #1. Busca por nome → GET /produtos/busca/nome?termo=espada
+ GET guilda_loja/_search
+{
+  "query": {
+    "match": {
+      "nome": "espada"
+    }
+  }
+}
+
+# 2. Busca por descrição → GET /produtos/busca/descricao?termo=produto
+GET guilda_loja/_search
+{
+  "query": {
+    "match": {
+      "nome": "cura"
+    }
+  }
+}
+
+# 3. Frase exata → GET /produtos/busca/frase?termo=produtos
+GET guilda_loja/_search
+{
+  "query": {
+    "match_phrase": {
+      "descricao": "mercado"
+    }
+  }
+}
+
+# 4. Fuzzy → GET /produtos/busca/fuzzy?termo=espa
+GET guilda_loja/_search
+{
+  "query": {
+    "match": {
+      "nome": {
+        "query": "espa",
+        "fuzziness": "AUTO" # brincar aqui
+      }
+    }
+  }
+}
+
+# 5. Múltiplos campos → GET /produtos/busca/multicampos?termo=dragao
+GET guilda_loja/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "dragao",
+      "fields": ["nome", "descricao"]
+    }
+  }
+}
+
+
+# ----------- PARTE B ------------
+
+# 1. Busca textual + filtro por categoria
+GET guilda_loja/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "descricao": "produto"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "categoria": "pocoes"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# 2. Busca por faixa de preço
+GET guilda_loja/_search
+{
+  "query": {
+    "range": {
+      "preco": {
+        "gte": 50,
+        "lte": 300
+      }
+    }
+  }
+}
+
+# 3. Busca avançada combinada
+GET guilda_loja/_search
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "categoria": "armas"
+          }
+        },
+        {
+          "term": {
+            "raridade": "raro"
+          }
+        },
+        {
+          "range": {
+            "preco": {
+              "gte": 200,
+              "lte": 1000
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -285,8 +285,29 @@
         {
           "name": "New Request",
           "request": {
-            "method": "GET",
-            "header": []
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"titulo\": \"Retomada morro do alemão\",\r\n  \"nivelPerigo\": \"CRITICO\",\r\n  \"status\": \"EM_ANDAMENTO\",\r\n  \"dataInicio\": \"2026-05-15T22:00:00\",\r\n  \"organizacaoId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/missoes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "missoes"
+              ]
+            }
           },
           "response": []
         }
@@ -353,6 +374,374 @@
             }
           },
           "response": []
+        }
+      ]
+    },
+    {
+      "name": "Operações",
+      "item": [
+        {
+          "name": "Missões-Top15Dias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/operacoes/painel-tatico/missoes/top15dias",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "operacoes",
+                "painel-tatico",
+                "missoes",
+                "top15dias"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ElasticSearch",
+      "item": [
+        {
+          "name": "Parte A",
+          "item": [
+            {
+              "name": "Busca por nome",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/busca/nome?termo=espada",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "busca",
+                    "nome"
+                  ],
+                  "query": [
+                    {
+                      "key": "termo",
+                      "value": "espada"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Múltiplos campos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/busca/multicampos?termo=dragao",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "busca",
+                    "multicampos"
+                  ],
+                  "query": [
+                    {
+                      "key": "termo",
+                      "value": "dragao"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Fuzzy",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/busca/fuzzy?termo=espa",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "busca",
+                    "fuzzy"
+                  ],
+                  "query": [
+                    {
+                      "key": "termo",
+                      "value": "espa"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Busca por descrição",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/busca/descricao?termo=produto",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "busca",
+                    "descricao"
+                  ],
+                  "query": [
+                    {
+                      "key": "termo",
+                      "value": "produto"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Frase exata",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/busca/frase?termo=produtos",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "busca",
+                    "frase"
+                  ],
+                  "query": [
+                    {
+                      "key": "termo",
+                      "value": "produtos"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Parte B",
+          "item": [
+            {
+              "name": "Com filtro",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/busca/com-filtro?termo=produto&categoria=pocoes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "busca",
+                    "com-filtro"
+                  ],
+                  "query": [
+                    {
+                      "key": "termo",
+                      "value": "produto"
+                    },
+                    {
+                      "key": "categoria",
+                      "value": "pocoes"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Faixa de preço",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/busca/faixa-preco?min=50&max=300",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "busca",
+                    "faixa-preco"
+                  ],
+                  "query": [
+                    {
+                      "key": "min",
+                      "value": "50"
+                    },
+                    {
+                      "key": "max",
+                      "value": "300"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Avançada",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/busca/avancada?categoria=armas&raridade=raro&min=200&max=1000",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "busca",
+                    "avancada"
+                  ],
+                  "query": [
+                    {
+                      "key": "categoria",
+                      "value": "armas"
+                    },
+                    {
+                      "key": "raridade",
+                      "value": "raro"
+                    },
+                    {
+                      "key": "min",
+                      "value": "200"
+                    },
+                    {
+                      "key": "max",
+                      "value": "1000"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Parte C",
+          "item": [
+            {
+              "name": "Produtos por Categoria",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/agregacoes/por-categoria",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "agregacoes",
+                    "por-categoria"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Produtos por Raridade",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/agregacoes/por-raridade",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "agregacoes",
+                    "por-raridade"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Preço Médio do Catálogo",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/agregacoes/preco-medio",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "agregacoes",
+                    "preco-medio"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Produtos por Faixa de Preço",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8080/produtos/agregacoes/faixas-preco",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "produtos",
+                    "agregacoes",
+                    "faixas-preco"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     }
