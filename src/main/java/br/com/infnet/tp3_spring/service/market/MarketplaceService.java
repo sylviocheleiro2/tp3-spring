@@ -1,17 +1,22 @@
 package br.com.infnet.tp3_spring.service.market;
 
+import br.com.infnet.tp3_spring.dto.market.AggregacaoItemResponse;
+import br.com.infnet.tp3_spring.dto.market.FaixaPrecoResponse;
+import br.com.infnet.tp3_spring.dto.market.PrecoMedioResponse;
 import br.com.infnet.tp3_spring.dto.market.ProdutoLojaResponse;
 import br.com.infnet.tp3_spring.model.market.ProdutoLoja;
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
+import co.elastic.clients.elasticsearch._types.aggregations.RangeBucket;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregations;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
-import org.springframework.data.elasticsearch.core.query.Query;
+
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -96,10 +101,6 @@ public class MarketplaceService
 
 
 
-
-
-
-
     // ----  PARTE B - Buscas com Filtros
 
     // 1. Busca textual + filtro por categoria -> GET /produtos/busca/com-filtro?termo=pocao&categoria=pocoes
@@ -147,6 +148,110 @@ public class MarketplaceService
                 ))
                 .build();
         return executarBusca(query);
+    }
+
+    // ── Parte C  Agregações ------
+
+    // GET /produtos/agregacoes/por-categoria
+    public List<AggregacaoItemResponse> agregarPorCategoria()
+    {
+        NativeQuery query = NativeQuery.builder()
+                .withAggregation("por_categoria",
+                        Aggregation.of(a -> a.terms(t -> t.field("categoria").size(50))))
+                .withQuery(q -> q.matchAll(m -> m))
+                .withMaxResults(0)
+                .build();
+
+        SearchHits<ProdutoLoja> hits = elasticsearchOperations.search(query, ProdutoLoja.class);
+        ElasticsearchAggregations aggs = (ElasticsearchAggregations) hits.getAggregations();
+
+        return aggs.get("por_categoria")
+                .aggregation()
+                .getAggregate()
+                .sterms()
+                .buckets().array().stream()
+                .map(b -> new AggregacaoItemResponse(b.key().stringValue(), b.docCount()))
+                .toList();
+    }
+
+    // GET /produtos/agregacoes/por-raridade
+    public List<AggregacaoItemResponse> agregarPorRaridade() {
+        NativeQuery query = NativeQuery.builder()
+                .withAggregation("por_raridade",
+                        Aggregation.of(a -> a.terms(t -> t.field("raridade").size(50))))
+                .withQuery(q -> q.matchAll(m -> m))
+                .withMaxResults(0)
+                .build();
+
+        SearchHits<ProdutoLoja> hits = elasticsearchOperations.search(query, ProdutoLoja.class);
+        ElasticsearchAggregations aggs = (ElasticsearchAggregations) hits.getAggregations();
+
+        return aggs.get("por_raridade")
+                .aggregation()
+                .getAggregate()
+                .sterms()
+                .buckets().array().stream()
+                .map(b -> new AggregacaoItemResponse(b.key().stringValue(), b.docCount()))
+                .toList();
+    }
+
+    // GET /produtos/agregacoes/preco-medio
+    public PrecoMedioResponse calcularPrecoMedio() {
+        NativeQuery query = NativeQuery.builder()
+                .withAggregation("preco_medio",
+                        Aggregation.of(a -> a.avg(avg -> avg.field("preco"))))
+                .withQuery(q -> q.matchAll(m -> m))
+                .withMaxResults(0)
+                .build();
+
+        SearchHits<ProdutoLoja> hits = elasticsearchOperations.search(query, ProdutoLoja.class);
+        ElasticsearchAggregations aggs = (ElasticsearchAggregations) hits.getAggregations();
+
+        double media = aggs.get("preco_medio")
+                .aggregation()
+                .getAggregate()
+                .avg()
+                .value();
+
+        return new PrecoMedioResponse(media);
+    }
+
+    // GET /produtos/agregacoes/faixas-preco
+    public List<FaixaPrecoResponse> agregarPorFaixaPreco() {
+        NativeQuery query = NativeQuery.builder()
+                .withAggregation("faixas_preco",
+                        Aggregation.of(a -> a.range(r -> r
+                                .field("preco")
+                                .ranges(ra -> ra.to(100.0))
+                                .ranges(ra -> ra.from(100.0).to(300.0))
+                                .ranges(ra -> ra.from(300.0).to(700.0))
+                                .ranges(ra -> ra.from(700.0))
+                        )))
+                .withQuery(q -> q.matchAll(m -> m))
+                .withMaxResults(0)
+                .build();
+
+        SearchHits<ProdutoLoja> hits = elasticsearchOperations.search(query, ProdutoLoja.class);
+        ElasticsearchAggregations aggs = (ElasticsearchAggregations) hits.getAggregations();
+
+        List<String> labels = List.of(
+                "Abaixo de 100",
+                "De 100 a 300",
+                "De 300 a 700",
+                "Acima de 700"
+        );
+
+        List<RangeBucket> buckets = aggs.get("faixas_preco")
+                .aggregation()
+                .getAggregate()
+                .range()
+                .buckets().array();
+
+        List<FaixaPrecoResponse> resultado = new ArrayList<>();
+        for (int i = 0; i < buckets.size(); i++) {
+            resultado.add(new FaixaPrecoResponse(labels.get(i), buckets.get(i).docCount()));
+        }
+        return resultado;
     }
 
 }

@@ -1,5 +1,8 @@
 package br.com.infnet.tp3_spring.controller.market;
 
+import br.com.infnet.tp3_spring.dto.market.AggregacaoItemResponse;
+import br.com.infnet.tp3_spring.dto.market.FaixaPrecoResponse;
+import br.com.infnet.tp3_spring.dto.market.PrecoMedioResponse;
 import br.com.infnet.tp3_spring.dto.market.ProdutoLojaResponse;
 import br.com.infnet.tp3_spring.service.market.MarketplaceService;
 import lombok.RequiredArgsConstructor;
@@ -70,4 +73,28 @@ public class MarketplaceController {
             @RequestParam BigDecimal max) {
         return ResponseEntity.ok(marketplaceService.buscarAvancada(categoria, raridade, min, max));
     }
+
+
+    // ── Parte C — Agregações ──
+
+    @GetMapping("/agregacoes/por-categoria")
+    public ResponseEntity<List<AggregacaoItemResponse>> agregarPorCategoria() {
+        return ResponseEntity.ok(marketplaceService.agregarPorCategoria());
+    }
+
+    @GetMapping("/agregacoes/por-raridade")
+    public ResponseEntity<List<AggregacaoItemResponse>> agregarPorRaridade() {
+        return ResponseEntity.ok(marketplaceService.agregarPorRaridade());
+    }
+
+    @GetMapping("/agregacoes/preco-medio")
+    public ResponseEntity<PrecoMedioResponse> calcularPrecoMedio() {
+        return ResponseEntity.ok(marketplaceService.calcularPrecoMedio());
+    }
+
+    @GetMapping("/agregacoes/faixas-preco")
+    public ResponseEntity<List<FaixaPrecoResponse>> agregarPorFaixaPreco() {
+        return ResponseEntity.ok(marketplaceService.agregarPorFaixaPreco());
+    }
+
 }
