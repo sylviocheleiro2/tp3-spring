@@ -8,27 +8,31 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MarketplaceService {
-
+public class MarketplaceService
+{
     private final ElasticsearchOperations elasticsearchOperations;
 
-    // Util
+    // ---  Util
+
     private List<ProdutoLojaResponse> executarBusca(NativeQuery query)
     {
-        SearchHits<ProdutoLoja> searchHits = elasticsearchOperations.search(query, ProdutoLoja.class);
-        return searchHits.getSearchHits().stream()
+        SearchHits<ProdutoLoja> hits = elasticsearchOperations.search(query, ProdutoLoja.class);
+        return hits.getSearchHits().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
-    private ProdutoLojaResponse mapToResponse(SearchHit<ProdutoLoja> hit)
-    {
+    private ProdutoLojaResponse mapToResponse(SearchHit<ProdutoLoja> hit) {
         ProdutoLoja p = hit.getContent();
         return new ProdutoLojaResponse(
                 p.getId(),
@@ -40,12 +44,11 @@ public class MarketplaceService {
         );
     }
 
+    // ---- PARTE A - Buscas Textuais
 
-    // PARTE A - Buscas Textuais
-
-     // 1. Busca por nome do produto -> GET /produtos/busca/nome?termo=espada
-
-    public List<ProdutoLojaResponse> buscarPorNome(String termo) {
+    // 1. Busca por nome do produto -> GET /produtos/busca/nome?termo=espada
+    public List<ProdutoLojaResponse> buscarPorNome(String termo)
+    {
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.match(m -> m.field("nome").query(termo)))
                 .build();
@@ -91,5 +94,59 @@ public class MarketplaceService {
         return executarBusca(query);
     }
 
+
+
+
+
+
+
+    // ----  PARTE B - Buscas com Filtros
+
+    // 1. Busca textual + filtro por categoria -> GET /produtos/busca/com-filtro?termo=pocao&categoria=pocoes
+    public List<ProdutoLojaResponse> buscarComFiltro(String termo, String categoria)
+    {
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.bool(b -> b
+                        .must(m -> m.match(ma -> ma.field("descricao").query(termo)))
+                        .filter(f -> f.term(t -> t.field("categoria").value(categoria)))
+                ))
+                .build();
+        return executarBusca(query);
+    }
+
+    // 2. Busca por faixa de preço -> GET /produtos/busca/faixa-preco?min=50&max=300
+    public List<ProdutoLojaResponse> buscarPorFaixaPreco(BigDecimal min, BigDecimal max)
+    {
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.range(r -> r
+                        .number(n -> n
+                                .field("preco")
+                                .gte(min.doubleValue())
+                                .lte(max.doubleValue())
+                        )
+                ))
+                .build();
+        return executarBusca(query);
+    }
+
+    // 3. Busca combinada: categoria + raridade + faixa de preço -> GET /produtos/busca/avancada?categoria=armas&raridade=raro&min=200&max=1000
+    public List<ProdutoLojaResponse> buscarAvancada(String categoria, String raridade,
+                                                    BigDecimal min, BigDecimal max)
+    {
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(q -> q.bool(b -> b
+                        .filter(f -> f.term(t -> t.field("categoria").value(categoria)))
+                        .filter(f -> f.term(t -> t.field("raridade").value(raridade)))
+                        .filter(f -> f.range(r -> r
+                                .number(n -> n
+                                        .field("preco")
+                                        .gte(min.doubleValue())
+                                        .lte(max.doubleValue())
+                                )
+                        ))
+                ))
+                .build();
+        return executarBusca(query);
+    }
 
 }

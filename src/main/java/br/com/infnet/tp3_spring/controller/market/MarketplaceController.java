@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class MarketplaceController {
 
     private final MarketplaceService marketplaceService;
 
-    // PARTE A - Buscas Textuais
+    // ── Parte A — Buscas Textuais
 
     @GetMapping("/busca/nome")
     public ResponseEntity<List<ProdutoLojaResponse>> buscarPorNome(@RequestParam String termo) {
@@ -43,5 +44,30 @@ public class MarketplaceController {
     @GetMapping("/busca/multicampos")
     public ResponseEntity<List<ProdutoLojaResponse>> buscarMultiCampos(@RequestParam String termo) {
         return ResponseEntity.ok(marketplaceService.buscarMultiCampos(termo));
+    }
+
+    // ── Parte B — Buscas com Filtros
+
+    @GetMapping("/busca/com-filtro")
+    public ResponseEntity<List<ProdutoLojaResponse>> buscarComFiltro(
+            @RequestParam String termo,
+            @RequestParam String categoria) {
+        return ResponseEntity.ok(marketplaceService.buscarComFiltro(termo, categoria));
+    }
+
+    @GetMapping("/busca/faixa-preco")
+    public ResponseEntity<List<ProdutoLojaResponse>> buscarPorFaixaPreco(
+            @RequestParam BigDecimal min,
+            @RequestParam BigDecimal max) {
+        return ResponseEntity.ok(marketplaceService.buscarPorFaixaPreco(min, max));
+    }
+
+    @GetMapping("/busca/avancada")
+    public ResponseEntity<List<ProdutoLojaResponse>> buscarAvancada(
+            @RequestParam String categoria,
+            @RequestParam String raridade,
+            @RequestParam BigDecimal min,
+            @RequestParam BigDecimal max) {
+        return ResponseEntity.ok(marketplaceService.buscarAvancada(categoria, raridade, min, max));
     }
 }
