@@ -6,14 +6,11 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
-
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +24,7 @@ public class MarketplaceService {
         SearchHits<ProdutoLoja> searchHits = elasticsearchOperations.search(query, ProdutoLoja.class);
         return searchHits.getSearchHits().stream()
                 .map(this::mapToResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private ProdutoLojaResponse mapToResponse(SearchHit<ProdutoLoja> hit)
@@ -63,7 +60,7 @@ public class MarketplaceService {
         return executarBusca(query);
     }
 
-    // 3. Busca por frase exata match_phrase na ordem. -> GET /produtos/busca/frase?termo=cura superior
+    // 3. Busca por frase exata match_phrase na ordem. -> GET /produtos/busca/frase?termo=mercado
     public List<ProdutoLojaResponse> buscarPorFraseExata(String termo) {
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.matchPhrase(m -> m.field("descricao").query(termo)))
@@ -71,7 +68,7 @@ public class MarketplaceService {
         return executarBusca(query);
     }
 
-    // 4. Busca fuzzy (tolera erros de digitação) -> GET /produtos/busca/fuzzy?termo=espdaa
+    // 4. Busca fuzzy (tolera erros de digitação) -> GET /produtos/busca/fuzzy?termo=espa
     public List<ProdutoLojaResponse> buscarFuzzyNome(String termo) {
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q.match(m -> m
