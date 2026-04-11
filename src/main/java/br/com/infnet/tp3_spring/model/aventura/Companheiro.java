@@ -11,7 +11,7 @@ import lombok.*;
 public class Companheiro {
 
     @Id
-    private Long id; // Este ID será preenchido pelo ID do Aventureiro
+    private Long id; // Este ID do Aventureiro
 
     @Column(nullable = false, length = 120)
     private String nome;
@@ -24,7 +24,7 @@ public class Companheiro {
     private Integer lealdade;
 
     @OneToOne
-    @MapsId // Mágica aqui: diz que o ID desta classe é o mesmo do Aventureiro
+    @MapsId // ID desta classe é o mesmo do Aventureiro
     @JoinColumn(name = "aventureiro_id")
     private Aventureiro aventureiro;
 }

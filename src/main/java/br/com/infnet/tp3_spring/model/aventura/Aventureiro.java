@@ -51,7 +51,7 @@ public class Aventureiro {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuarioResponsavel; // O usuário que cadastrou o aventureiro
 
-    // Relacionamento 1:1 com Companheiro (Mapearemos a seguir)
+    // Relacionamento 1:1 com Companheiro
     @OneToOne(mappedBy = "aventureiro", cascade = CascadeType.ALL, orphanRemoval = true)
     private Companheiro companheiro;
 }

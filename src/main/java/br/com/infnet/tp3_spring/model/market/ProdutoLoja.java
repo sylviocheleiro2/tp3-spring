@@ -33,6 +33,6 @@ public class ProdutoLoja {
     @Field(type = FieldType.Keyword)
     private String raridade;
 
-    @Field(type = FieldType.Float) // No ES é float, no Java usamos BigDecimal para precisão financeira
+    @Field(type = FieldType.Float)
     private BigDecimal preco;
 }

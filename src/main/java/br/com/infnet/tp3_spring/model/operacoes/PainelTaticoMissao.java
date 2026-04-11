@@ -1,23 +1,21 @@
 package br.com.infnet.tp3_spring.model.operacoes;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import br.com.infnet.tp3_spring.enums.NivelPerigo;
+import br.com.infnet.tp3_spring.enums.StatusMissao;
+import jakarta.persistence.*;
 
 import lombok.Getter;
-
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Getter
 @Entity
+@Table(name = "vw_painel_tatico_missao", schema = "operacoes")
+@Getter@Setter
 @Immutable
-@Subselect("SELECT * FROM operacoes.vw_painel_tatico_missao")
-public class PainelTaticoMissao implements Serializable{
+public class PainelTaticoMissao {
 
     @Id
     @Column(name = "missao_id")
@@ -27,10 +25,12 @@ public class PainelTaticoMissao implements Serializable{
     private String titulo;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    StatusMissao status;
 
     @Column(name = "nivel_perigo")
-    private String nivelPerigo;
+    @Enumerated(EnumType.STRING)
+    NivelPerigo nivelPerigo;
 
     @Column(name = "organizacao_id")
     private Long organizacaoId;
