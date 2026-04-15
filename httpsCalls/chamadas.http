@@ -1,0 +1,194 @@
+
+### ============================================================
+### AVENTUREIROS
+### ============================================================
+
+### Aventureiros - Listagem com Filtros
+GET http://localhost:8080/api/aventureiros?organizacaoId=1&ativo=true&classe=GUERREIRO&nivelMinimo=5
+
+###
+
+### Aventureiros - Busca por Nome (Parcial)
+GET http://localhost:8080/api/aventureiros/busca?organizacaoId=1&nome=MA&sort=nome,asc
+
+###
+
+### Aventureiros - Perfil Completo
+GET http://localhost:8080/api/aventureiros/1
+
+###
+
+### Aventureiros - Criação
+POST http://localhost:8080/api/aventureiros
+Content-Type: application/json
+
+{
+  "nome": "Patolino o MAGO",
+  "classe": "MAGO",
+  "nivel": 7,
+  "organizacaoId": 1,
+  "usuarioResponsavelId": 2
+}
+
+###
+
+### Aventureiros - Criação 2
+POST http://localhost:8080/api/aventureiros
+Content-Type: application/json
+
+{
+  "nome": "Guts, o Espadachim Negro",
+  "classe": "GUERREIRO",
+  "nivel": 6,
+  "organizacaoId": 1,
+  "usuarioResponsavelId": 2
+}
+
+###
+
+
+### ============================================================
+### MISSÕES
+### ============================================================
+
+### Missões - Listagem de Missões
+GET http://localhost:8080/api/missoes?organizacaoId=1&status=PLANEJADA&nivelPerigo=ALTO&inicio=2026-01-01T00:00:00
+
+###
+
+### Missões - Detalhamento de Missão
+GET http://localhost:8080/api/missoes/1
+
+###
+
+### Missões - Detalhamento de Missão sem existir
+GET http://localhost:8080/api/missoes/2
+
+###
+
+### Missões - Adicionar participando missão
+POST http://localhost:8080/api/participacoes
+Content-Type: application/json
+
+{
+  "aventureiroId": 4,
+  "missaoId": 1,
+  "papel": "SUPORTE",
+  "recompensaOuro": 850.00
+}
+
+###
+
+### Missões - Criação
+POST http://localhost:8080/api/missoes
+Content-Type: application/json
+
+{
+  "titulo": "Retomada morro do alemão",
+  "nivelPerigo": "CRITICO",
+  "status": "EM_ANDAMENTO",
+  "dataInicio": "2026-05-15T22:00:00",
+  "organizacaoId": 1
+}
+
+###
+
+
+### ============================================================
+### RELATÓRIOS GERENCIAIS
+### ============================================================
+
+### Relatório - Ranking de aventureiro p/ organização
+GET http://localhost:8080/api/aventureiros/ranking?organizacaoId=1&status=CONCLUIDA
+
+###
+
+### Relatório - Organização missão
+GET http://localhost:8080/api/missoes/relatorios/metricas?organizacaoId=1
+
+###
+
+
+### ============================================================
+### OPERAÇÕES
+### ============================================================
+
+### Missões - Top 15 Dias
+GET http://localhost:8080/api/operacoes/painel-tatico/missoes/top15dias
+
+###
+
+
+### ============================================================
+### ELASTICSEARCH - PARTE A
+### ============================================================
+
+### Busca por nome
+GET http://localhost:8080/produtos/busca/nome?termo=espada
+
+###
+
+### Múltiplos campos
+GET http://localhost:8080/produtos/busca/multicampos?termo=dragao
+
+###
+
+### Fuzzy
+GET http://localhost:8080/produtos/busca/fuzzy?termo=espa
+
+###
+
+### Busca por descrição
+GET http://localhost:8080/produtos/busca/descricao?termo=produto
+
+###
+
+### Frase exata
+GET http://localhost:8080/produtos/busca/frase?termo=produtos
+
+###
+
+
+### ============================================================
+### ELASTICSEARCH - PARTE B
+### ============================================================
+
+### Com filtro
+GET http://localhost:8080/produtos/busca/com-filtro?termo=produto&categoria=pocoes
+
+###
+
+### Faixa de preço
+GET http://localhost:8080/produtos/busca/faixa-preco?min=50&max=300
+
+###
+
+### Avançada
+GET http://localhost:8080/produtos/busca/avancada?categoria=armas&raridade=raro&min=200&max=1000
+
+###
+
+
+### ============================================================
+### ELASTICSEARCH - PARTE C
+### ============================================================
+
+### Produtos por Categoria
+GET http://localhost:8080/produtos/agregacoes/por-categoria
+
+###
+
+### Produtos por Raridade
+GET http://localhost:8080/produtos/agregacoes/por-raridade
+
+###
+
+### Preço Médio do Catálogo
+GET http://localhost:8080/produtos/agregacoes/preco-medio
+
+###
+
+### Produtos por Faixa de Preço
+GET http://localhost:8080/produtos/agregacoes/faixas-preco
+
+###
