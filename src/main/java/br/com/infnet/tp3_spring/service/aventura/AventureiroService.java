@@ -120,15 +120,10 @@ public class AventureiroService {
 
 
 
-    public Page<AventureiroResponse> listarComFiltros(
-            Long organizacaoId,
-            Boolean ativo,
-            ClasseAventureiro classe,
-            Integer nivelMinimo,
-            Pageable pageable)
+    public Page<AventureiroResponse> listarComFiltros(AventureiroFiltroRequest filtro, Pageable pageable)
     {
         return aventureiroRepository.findAll(
-                AventureiroSpecs.comFiltros(organizacaoId, ativo, classe, nivelMinimo),
+                AventureiroSpecs.comFiltros(filtro.organizacaoId(), filtro.ativo(), filtro.classe(), filtro.nivelMinimo()),
                 pageable
         ).map(this::mapToResponse);
     }

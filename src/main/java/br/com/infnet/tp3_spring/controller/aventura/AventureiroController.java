@@ -22,53 +22,36 @@ public class AventureiroController {
     private final AventureiroService service;
 
     @PostMapping
-    public ResponseEntity<?> criar(@RequestBody AventureiroRequest request)
+    public ResponseEntity<AventureiroResponse> criar(@RequestBody AventureiroRequest request)
     {
-        try {
-            AventureiroResponse response = service.cadastrar(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        AventureiroResponse response = service.cadastrar(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     public ResponseEntity<Page<AventureiroResponse>> listar(
-            @RequestParam Long organizacaoId,
-            @RequestParam(required = false) Boolean ativo,
-            @RequestParam(required = false) ClasseAventureiro classe,
-            @RequestParam(required = false) Integer nivelMinimo,
+            @ModelAttribute AventureiroFiltroRequest filtro,
             Pageable pageable)
     {
         // Aceita ?page=0&size=10&sort=nome,asc
-        Page<AventureiroResponse> pagina = service.listarComFiltros(
-                organizacaoId, ativo, classe, nivelMinimo, pageable
-        );
+        Page<AventureiroResponse> pagina = service.listarComFiltros(filtro, pageable);
 
         return ResponseEntity.ok(pagina);
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletar(@PathVariable Long id)
+    public ResponseEntity<Void> deletar(@PathVariable Long id)
     {
-        try {
-            service.deletar(id);
-            return ResponseEntity.noContent().build(); // Status 204
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        service.deletar(id);
+        return ResponseEntity.noContent().build(); // Status 204
     }
 
     @PostMapping("/{id}/companheiro")
-    public ResponseEntity<?> adotarCompanheiro(@PathVariable Long id, @RequestBody CompanheiroRequest request)
+    public ResponseEntity<CompanheiroResponse> adotarCompanheiro(@PathVariable Long id, @RequestBody CompanheiroRequest request)
     {
-        try {
-            CompanheiroResponse response = service.adotarCompanheiro(id, request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        CompanheiroResponse response = service.adotarCompanheiro(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/busca")

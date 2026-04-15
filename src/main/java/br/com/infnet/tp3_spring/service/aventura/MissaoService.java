@@ -64,16 +64,10 @@ public class MissaoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<MissaoResponse> listarComFiltros(
-            Long organizacaoId,
-            StatusMissao status,
-            NivelPerigo nivelPerigo,
-            LocalDateTime inicio,
-            LocalDateTime fim,
-            Pageable pageable)
+    public Page<MissaoResponse> listarComFiltros(MissaoFiltroRequest filtro, Pageable pageable)
     {
         return missaoRepository.findAll(
-                MissaoSpecs.comFiltros(organizacaoId, status, nivelPerigo, inicio, fim),
+                MissaoSpecs.comFiltros(filtro.organizacaoId(), filtro.status(), filtro.nivelPerigo(), filtro.inicio(), filtro.fim()),
                 pageable
         ).map(this::mapToResponse);
     }

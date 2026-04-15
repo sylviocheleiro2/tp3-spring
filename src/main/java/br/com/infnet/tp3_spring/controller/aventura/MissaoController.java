@@ -4,6 +4,7 @@ import br.com.infnet.tp3_spring.dto.aventura.MissaoDetalheResponse;
 import br.com.infnet.tp3_spring.dto.aventura.MissaoMetricasResponse;
 import br.com.infnet.tp3_spring.dto.aventura.MissaoRequest;
 import br.com.infnet.tp3_spring.dto.aventura.MissaoResponse;
+import br.com.infnet.tp3_spring.dto.aventura.MissaoFiltroRequest;
 import br.com.infnet.tp3_spring.enums.NivelPerigo;
 import br.com.infnet.tp3_spring.enums.StatusMissao;
 import br.com.infnet.tp3_spring.service.aventura.MissaoService;
@@ -26,27 +27,18 @@ public class MissaoController {
     private final MissaoService service;
 
     @PostMapping
-    public ResponseEntity<?> criar(@RequestBody MissaoRequest request)
+    public ResponseEntity<MissaoResponse> criar(@RequestBody MissaoRequest request)
     {
-        try {
-            MissaoResponse response = service.criar(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        MissaoResponse response = service.criar(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     public ResponseEntity<Page<MissaoResponse>> listar(
-            @RequestParam Long organizacaoId,
-            @RequestParam(required = false) StatusMissao status,
-            @RequestParam(required = false) NivelPerigo nivelPerigo,
-            @RequestParam(required = false) LocalDateTime inicio,
-            @RequestParam(required = false) LocalDateTime fim,
+            @ModelAttribute MissaoFiltroRequest filtro,
             Pageable pageable)
     {
-
-        return ResponseEntity.ok(service.listarComFiltros(organizacaoId, status, nivelPerigo, inicio, fim, pageable));
+        return ResponseEntity.ok(service.listarComFiltros(filtro, pageable));
     }
 
     @GetMapping("/{id}")

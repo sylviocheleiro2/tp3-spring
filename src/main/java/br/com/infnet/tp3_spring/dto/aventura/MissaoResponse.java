@@ -10,7 +10,7 @@ public record MissaoResponse(
         String titulo,
         NivelPerigo nivelPerigo,
         StatusMissao status,
-        LocalDateTime dataInicio, // Campo novo
-        LocalDateTime dataTermino, // Campo novo
+        LocalDateTime dataInicio,
+        LocalDateTime dataTermino,
         OrganizacaoResponse organizacao
 ) {}
